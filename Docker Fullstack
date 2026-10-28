@@ -1,0 +1,47 @@
+name: Docker Fullstack
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-push:
+    name: Build and Push Docker Images
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set Up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+          cache-dependency-path: ProjectWorkspace/YogaSessionProject/pom.xml
+
+      - name: Build Backend
+        working-directory: ProjectWorkspace/YogaSessionProject
+        run: chmod +x mvnw && ./mvnw -B clean package
+
+      - name: Build Backend Docker Image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./ProjectWorkspace/YogaSessionProject
+          file: ./ProjectWorkspace/YogaSessionProject/Dockerfile
+          push: false
+          tags: chakkasravyanjali/docker-backend-2400032052:latest
+
+      - name: Build Frontend Docker Image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./YogaSessionFrontend
+          file: ./YogaSessionFrontend/Dockerfile
+          push: false
+          tags: chakkasravyanjali/docker-frontend-2400032052:latest
