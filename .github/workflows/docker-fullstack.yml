@@ -28,7 +28,9 @@ jobs:
 
       - name: Build Backend
         working-directory: ProjectWorkspace/YogaSessionProject
-        run: chmod +x mvnw && ./mvnw -B clean package
+        run: |
+          chmod +x mvnw
+          ./mvnw -B clean package
 
       - name: Set Up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -43,6 +45,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: ./ProjectWorkspace/YogaSessionProject
+          file: ./ProjectWorkspace/YogaSessionProject/Dockerfile
           push: true
           tags: chakkasravyanjali/docker-backend-2400032052:latest
 
@@ -50,5 +53,6 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: ./YogaSessionFrontend
+          file: ./YogaSessionFrontend/Dockerfile
           push: true
           tags: chakkasravyanjali/docker-frontend-2400032052:latest
