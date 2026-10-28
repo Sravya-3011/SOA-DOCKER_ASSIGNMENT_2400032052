@@ -1,4 +1,4 @@
-```yaml
+
 name: Docker Fullstack Deployment
 
 on:
@@ -56,4 +56,3 @@ jobs:
           file: ./YogaSessionFrontend/Dockerfile
           push: true
           tags: chakkasravyanjali/docker-frontend-2400032052:latest
-```
