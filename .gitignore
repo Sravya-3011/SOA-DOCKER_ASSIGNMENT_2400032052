@@ -1,0 +1,11 @@
+**/node_modules/
+**/dist/
+**/target/
+**/.metadata/
+**/.settings/
+**/.classpath
+**/.project
+.env
+.env.*
+!.env.example
+*.log

@@ -1,0 +1,41 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: yoga-postgres-container
+    environment:
+      POSTGRES_DB: yogaSessiondb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Sravya
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d yogaSessiondb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    image: chakkasravyanjali/docker-backend-2400032052:latest
+    container_name: yoga-backend-container
+    ports:
+      - "8002:8001"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/yogaSessiondb
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: Sravya
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  frontend:
+    image: chakkasravyanjali/docker-frontend-2400032052:latest
+    container_name: yoga-frontend-container
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
