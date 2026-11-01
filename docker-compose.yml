@@ -5,7 +5,7 @@ services:
     environment:
       POSTGRES_DB: yogaSessiondb
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: Sravya
+      POSTGRES_PASSWORD: docker
     ports:
       - "5432:5432"
     volumes:
@@ -17,6 +17,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    restart: always
 
   backend:
     image: chakkasravyanjali/docker-backend-2400032052:latest
@@ -26,13 +27,13 @@ services:
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/yogaSessiondb
       SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: Sravya
+      SPRING_DATASOURCE_PASSWORD: docker
     depends_on:
       postgres:
         condition: service_healthy
-    restart: on-failure
     networks:
       - yoga-network
+    restart: on-failure
 
   frontend:
     image: chakkasravyanjali/docker-frontend-2400032052:latest
@@ -41,12 +42,13 @@ services:
       - "3000:80"
     depends_on:
       - backend
-    restart: on-failure
     networks:
       - yoga-network
+    restart: on-failure
 
 volumes:
   postgres_data:
 
 networks:
   yoga-network:
+    driver: bridge
