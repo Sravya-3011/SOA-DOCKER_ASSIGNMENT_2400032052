@@ -1,43 +1,52 @@
-yaml
-name: Docker Build and Push
+services:
+  postgresdb:
+    image: postgres:16-alpine
+    container_name: yoga-postgres-container
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: docker
+      POSTGRES_DB: yogaSessiondb
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d yogaSessiondb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - yoga-network
 
-on:
-  push:
-    branches:
-      - main
-  workflow_dispatch:
+  backend:
+    image: chakkasravyanjali/docker-backend-2400032052:latest
+    container_name: yoga-backend-container
+    ports:
+      - "8002:8001"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgresdb:5432/yogaSessiondb
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: Sravya
+    depends_on:
+      postgresdb:
+        condition: service_healthy
+    restart: on-failure
+    networks:
+      - yoga-network
 
-jobs:
-  docker:
-    runs-on: ubuntu-latest
+  frontend:
+    image: chakkasravyanjali/docker-frontend-2400032052:latest
+    container_name: yoga-frontend-container
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    restart: on-failure
+    networks:
+      - yoga-network
 
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
+volumes:
+  postgres_data:
 
-      - name: Setup Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
-      # Build Frontend
-      - name: Build and Push Frontend
-        uses: docker/build-push-action@v6
-        with:
-          context: ./YogaSessionFrontend
-          file: ./YogaSessionFrontend/Dockerfile
-          push: true
-          tags: chakkasravyanjali/docker-frontend-2400032052:latest
-
-      # Build Backend
-      - name: Build and Push Backend
-        uses: docker/build-push-action@v6
-        with:
-          context: ./ProjectWorkspace/YogaSessionProject
-          file: ./ProjectWorkspace/YogaSessionProject/Dockerfile
-          push: true
-          tags: chakkasravyanjali/docker-backend-2400032052:latest
+networks:
+  yoga-network:
