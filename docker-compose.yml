@@ -10,6 +10,8 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - yoga-network
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d yogaSessiondb"]
       interval: 10s
@@ -28,6 +30,9 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    restart: on-failure
+    networks:
+      - yoga-network
 
   frontend:
     image: chakkasravyanjali/docker-frontend-2400032052:latest
@@ -36,6 +41,12 @@ services:
       - "3000:80"
     depends_on:
       - backend
+    restart: on-failure
+    networks:
+      - yoga-network
 
 volumes:
   postgres_data:
+
+networks:
+  yoga-network:
