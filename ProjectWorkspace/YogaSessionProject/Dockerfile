@@ -11,7 +11,7 @@ COPY src ./src
 # Give execute permission for mvnw
 RUN chmod +x mvnw
 
-RUN ./mvnw clean package -DskipTests
+RUN ./mvnw clean package -Dmaven.test.skip=true
 
 # Stage 2: Run the app
 FROM eclipse-temurin:21-jdk
