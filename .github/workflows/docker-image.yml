@@ -1,4 +1,3 @@
-
 name: Docker Fullstack
 
 on:
@@ -31,15 +30,15 @@ jobs:
       - name: Build frontend image
         uses: docker/build-push-action@v6
         with:
-          context: ./AssignmentFrontend
-          file: ./AssignmentFrontend/Dockerfile
+          context: ./YogaSessionFrontend
+          file: ./YogaSessionFrontend/Dockerfile
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/docker-frontend-2400032052:latest
 
       - name: Build backend image
         uses: docker/build-push-action@v6
         with:
-          context: ./ASSIGNMENTWORKSPACE/PackageTrackingServiceProject
-          file: ./ASSIGNMENTWORKSPACE/PackageTrackingServiceProject/DockerFile
+          context: ./ProjectWorkspace/YogaSessionProject
+          file: ./ProjectWorkspace/YogaSessionProject/Dockerfile
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/docker-backend-2400032052:latest
